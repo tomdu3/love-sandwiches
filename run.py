@@ -1,6 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
-from pprint import pprint
+
 
 SCOPE = [
   'https://www.googleapis.com/auth/spreadsheets',
@@ -14,9 +14,6 @@ GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('love_sandwiches')
 sales = SHEET.worksheet('sales')
 
-# data = sales.get_all_values()
-
-# print(data)
 
 def get_sales_data():
   '''
@@ -30,7 +27,7 @@ def get_sales_data():
     print('Data should be six numbers, separated by commas.')
     print('Example: 10,20,30,40,50,60\n')
 
-    data_str = input('Enter your data here: ')
+    data_str = input('Enter your data here: \n')
     sales_data = data_str.split(',')
     validate_data(sales_data)
 
@@ -39,6 +36,7 @@ def get_sales_data():
       break
 
   return sales_data
+
 
 def validate_data(values):
   '''
@@ -57,26 +55,7 @@ def validate_data(values):
     return False
 
   return True 
-  
-
-# def update_sales_worksheet(data):
-#   '''
-#   Update sales worksheet, add new row with the list data provided.
-#   '''
-#   print('Updating sales worksheet...\n')
-#   sales_worksheet = SHEET.worksheet('sales')
-#   sales_worksheet.append_row(data)
-#   print('Sales worksheet updated successfully.\n')
-
-# def update_surplus_worksheet(data):
-#   '''
-#   Update surplus worksheet, add new row with the list data provided.
-#   '''
-#   print('Updating surplus worksheet...\n')
-#   surplus_worksheet = SHEET.worksheet('surplus')
-#   surplus_worksheet.append_row(data)
-#   print('Surplus worksheet updated successfully.\n')
-
+ 
 
 def update_worksheet(data, worksheet):
   '''
@@ -136,8 +115,16 @@ def calculate_stock_data(data):
     new_stock_data.append(round(stock_num))
     
   return new_stock_data
-  
 
+def get_stock_values(data):
+  '''
+  Get the output of stock values in a form of a dictionary
+  for the user to know how many sandwiches to make for the
+  next market.
+  '''
+  headings = SHEET.worksheet('stock').get_all_values[0]
+  stock_dict = {key:value for key,value in zip(headings, data)}
+  return stock_dict
 
 def main():
   '''
@@ -151,6 +138,9 @@ def main():
   sales_columns = get_last_5_entries_sales()
   stock_data = calculate_stock_data(sales_columns)
   update_worksheet(stock_data, 'stock')
+  stock_values = get_stock_values(stock_data)
+  print(f'Make the following numbers of sandwiches for next market:\n\n{stock_values}')
+
   
 print('Welcome to Love Sandwiches Data Automation')
 main()
