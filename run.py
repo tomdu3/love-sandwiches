@@ -122,7 +122,7 @@ def get_stock_values(data):
   for the user to know how many sandwiches to make for the
   next market.
   '''
-  headings = SHEET.worksheet('stock').get_all_values[0]
+  headings = SHEET.worksheet('stock').get_all_values()[0]
   stock_dict = {key:value for key,value in zip(headings, data)}
   return stock_dict
 
